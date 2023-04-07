@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/customer-layout.html}">
+
+<head>
+    <title>Shopping Cart</title>
+</head>
+
+<body>
+<main layout:fragment="content">
+    <div class="bg-success bg-opacity-75 p-2 text-center shadow">
+            <span class="fw-bold">
+                <a class="text-decoration-none text-dark common-hover" th:href="@{/}">Home </a> /
+                <span class="text-white">Shopping Cart</span>
+            </span>
+    </div>
+    <h1 class="text-center m-5">Shopping Cart</h1>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="container">
+        <form action="">
+            <table id="table" class="table border">
+                <thead class="table-dark">
+                <tr>
+                    <th><strong>PRODUCT</strong></th>
+                    <th><strong>QUANTITY</strong></th>
+                    <th style="min-width: 100px;"><strong>PRICE</strong></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${items==null or items.isEmpty()}" class="position-relative">
+                    <td class="d-flex align-items-center">Empty cart!</td>
+                </tr>
+                <tr th:each="item : ${items}" class="position-relative">
+                    <td class="d-flex align-items-center">
+                        <img th:src="@{${item.product.productImagePath}}" alt="" class="cart-product-img">
+                        <div class="ms-3">
+                            <strong>
+                                <th:block th:text="${item.product.productName}"></th:block>
+                            </strong>
+                            <br>
+                            $<span class="product-price" th:text="${item.product.price}"></span>
+                            <span hidden class="quantity" th:text="${item.product.quantity}"></span>
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        <div class="bg-secondary bg-opacity-25 d-flex p-2 mh-100 text-center"
+                             style="width: 120px;">
+                            <i class="dec-btn fa-solid fa-minus"></i>
+                            <input class="cart-qty" type="number" th:value="${item.quantity}" required>
+                            <i class="inc-btn fa-solid fa-plus"></i>
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        $<span class="total-price" th:text="${item.product.price*item.quantity}"></span>
+                        <a th:href="@{/cart/delete/{id}(id=${item.id})}" class="position-absolute end-0 me-5 text-dark">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    </td>
+                    <script>
+                        var incrementButton = document.getElementsByClassName('inc-btn');
+                        var decrementButton = document.getElementsByClassName('dec-btn');
+
+
+                        for (var i = 0; i < incrementButton.length; i++) {
+                            var button = incrementButton[i];
+                            button.addEventListener('click', function (event) {
+                                var buttonClicked = event.target;
+                                var input = buttonClicked.parentElement.children[1];
+                                let val = buttonClicked.parentElement.parentElement.parentElement;
+                                let unitPrice = val.querySelector('.product-price').innerHTML;
+                                let subPrice = val.querySelector('.total-price');
+                                let quantity = parseInt(val.querySelector('.quantity').innerHTML);
+
+                                var inputValue = input.value;
+
+                                if (inputValue >= quantity)
+                                {
+                                    inputValue = quantity;
+                                    getSubPrice(subPrice,inputValue,unitPrice);
+                                    getTotalPrice()
+                                }
+                                else {
+                                    var newValue = parseInt(inputValue) + 1;
+                                    input.value = newValue;
+                                    getSubPrice(subPrice,input.value,unitPrice);
+                                    getTotalPrice()
+                                }
+                            })
+                        }
+
+                        for (var i = 0; i < decrementButton.length; i++) {
+                            var button = decrementButton[i];
+                            button.addEventListener('click', function (event) {
+                                var buttonClicked = event.target;
+                                var input = buttonClicked.parentElement.children[1];
+                                let val = buttonClicked.parentElement.parentElement.parentElement;
+                                let unitPrice = val.querySelector('.product-price').innerHTML;
+                                let subPrice = val.querySelector('.total-price');
+
+                                var inputValue = input.value;
+
+                                if (inputValue <= 1)
+                                {
+                                    inputValue = 1;
+                                    getSubPrice(subPrice,inputValue,unitPrice);
+                                    getTotalPrice();
+                                }
+
+                                else {
+                                    var newValue = parseInt(inputValue) - 1;
+                                    input.value = newValue;
+                                    getSubPrice(subPrice,input.value,unitPrice);
+                                    getTotalPrice();
+                                }
+                            })
+                        }
+
+                        var inputs = document.getElementsByClassName('cart-qty');
+                        for ( let input of inputs) {
+                            input.oninput = (event) => {
+                                let val = input.parentElement.parentElement.parentElement;
+                                let unitPrice = val.querySelector('.product-price').innerHTML;
+                                let subPrice = val.querySelector('.total-price');
+                                let quantity = parseInt(val.querySelector('.quantity').innerHTML);
+
+
+                                valueInput = event.target.value;
+                                getSubPrice(subPrice,valueInput,unitPrice);
+
+                                if(parseInt(valueInput) >= quantity) {
+                                   input.value = quantity;
+                                   getSubPrice(subPrice,input.value,unitPrice);
+                                   getTotalPrice()
+
+                                }
+                                else if (parseInt(valueInput)<=1) {
+                                    input.value = 1;
+                                    getSubPrice(subPrice,input.value,unitPrice);
+                                    getTotalPrice()
+
+                                }
+                                else if(isNaN(parseInt(valueInput))) {
+                                    subPrice.innerHTML = "0";
+                                    getTotalPrice()
+                                }
+                            }
+                        }
+                        function getSubPrice (subPrice, input, unitPrice) {
+                            subPrice.innerHTML = (parseInt(input) * parseFloat(unitPrice)).toFixed(2);
+                        }
+                        function getTotalPrice () {
+                            var arr = [];
+                            let subPrices = document.querySelectorAll('.total-price');
+                            let totalPrice = document.querySelector('.total');
+                            for (let subPrice of subPrices) {
+                                 arr.push(parseFloat(subPrice.innerHTML))
+                            }
+                            let total = arr.reduce((acc, val) => {
+                                return acc + val;
+                            })
+                            totalPrice.innerHTML = total.toFixed(2);
+                            arr = [];
+                        }
+                    </script>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="d-flex mb-5 mt-4">
+            <div>
+                <a th:href="@{/product}" class="btn btn-outline-dark fw-bold text-center p-3">
+                    Continue Shopping
+                </a>
+            </div>
+            <div>
+                <div class="border-bottom fw-bold text-center p-3 ms-5 border-danger">
+                    <a th:href="@{/cart/clear}" class="text-decoration-none text-dark">
+                        <i class="fa-solid fa-xmark me-2"></i>
+                        Clear Shopping Cart</a></div>
+            </div>
+            <div class="border ms-auto w-25 shadow">
+                <div class="m-3">
+                    <div class="justify-content-between d-flex align-items-center mb-3">
+                        <div><strong>Total:</strong></div>
+                        <div class="fs-3 fw-bold ">$<span class="total" th:text="${total}"></span></div>
+                    </div>
+                    <button class="btn btn-dark w-100 p-2 common-background-hover">Check Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+
+</html>

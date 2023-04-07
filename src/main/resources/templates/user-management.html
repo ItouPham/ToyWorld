@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout.html}">
+<head>
+    <title>User Management</title>
+</head>
+
+<body>
+<main layout:fragment="content">
+    <div class="bg-success bg-opacity-75 p-2 text-center shadow">
+            <span class="fw-bold">
+                <a class="text-decoration-none text-dark common-hover" th:href="@{/}">Home </a> /
+                <span class="text-white">User management</span>
+            </span>
+    </div>
+    <h1 class="text-center m-5">User management</h1>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="container">
+        <div class="d-flex mb-4 justify-content-between">
+            <div class="col-3">
+                <a th:href="@{/admin/user/add}" class="btn btn-primary text-white common-background-hover">
+                    <i class="fa-solid fa-plus fa-sm"></i>
+                </a>
+            </div>
+            <div class="col-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <button class="btn btn-primary" type="button" id="button-addon2"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th><strong>No.</strong></th>
+                <th><strong>Email</strong></th>
+                <th><strong>First Name</strong></th>
+                <th><strong>Last Name</strong></th>
+                <th><strong>Telephone</strong></th>
+                <th><strong>Address</strong></th>
+                <th class="text-center"><strong>Edit</strong></th>
+                <th class="text-center"><strong>Delete</strong></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user, index : ${users}">
+                <td th:text="${index.count}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.firstName}"></td>
+                <td th:text="${user.lastName}"></td>
+                <td th:text="${user.telephone}"></td>
+                <td th:text="${user.address}"></td>
+                <td class="text-center">
+                    <a th:href="@{/admin/user/update/{id}(id=${user.id})}">
+                        <i class="fa-solid fa-pen-to-square fa-xl text-dark common-hover"></i>
+                    </a>
+                </td>
+                <td class="text-center">
+                    <button class="border-0 bg-transparent">
+                        <a th:data-id="${user.id}"
+                           th:data-name="${user.email}"
+                           onclick="showConfirmModalDialog(this.getAttribute('data-id'),this.getAttribute('data-name'))">
+                            <i class="fa-solid fa-trash fa-xl text-dark common-hover"></i>
+                        </a>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="m-5">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+
+                    <li th:if="${currentPage > 1}" class="page-item">
+                        <a class="page-link" th:href="@{/admin/user/page/1}">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </a>
+                    </li>
+                    <li th:unless="${currentPage > 1}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </span>
+                    </li>
+
+                    <li th:if="${currentPage > 1}" class="page-item">
+                        <a class="page-link" th:href="@{'/admin/user/page/' + ${currentPage - 1}}">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </a>
+                    </li>
+                    <li th:unless="${currentPage > 1}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </span>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item">
+                        <a th:if="${i != currentPage}"
+                           th:href="@{'/admin/user/page/' + ${i}}"
+                           class="page-link">[[${i}]]</a>
+                        <span th:unless="${i != currentPage}"
+                              class="page-link active">[[${i}]]</span>
+                    </li>
+
+
+                    <li th:if="${currentPage < totalPages}" class="page-item">
+                        <a class="page-link" th:href="@{'/admin/user/page/' + ${currentPage + 1}}">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li th:unless="${currentPage < totalPages}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </span>
+                    </li>
+
+
+                    <li th:if="${currentPage < totalPages}" class="page-item">
+                        <a class="page-link" th:href="@{'/admin/user/page/' + ${totalPages}}">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+                    </li>
+                    <li th:unless="${currentPage < totalPages}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <script>
+            function showConfirmModalDialog(id,name){
+                $('#user-email').text(name);
+                $('#yesOption').attr('href','/admin/user/delete/' + id);
+                $('#confirmationId').modal('show');
+            }
+
+
+
+        </script>
+
+        <!-- Modal -->
+        <div class="modal fade" id="confirmationId" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Do you want to delete account with email "<span id="user-email"></span>"
+                    </div>
+                    <div class="modal-footer">
+                        <a id="yesOption" type="button" class="btn btn-danger">Yes</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>

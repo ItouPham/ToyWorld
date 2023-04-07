@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/customer-layout.html}">
+
+<head>
+    <title>Product</title>
+</head>
+
+<body>
+<main layout:fragment="content">
+    <div class="bg-success bg-opacity-75 p-2 text-center shadow">
+            <span class="fw-bold">
+                <a class="text-decoration-none text-dark common-hover" th:href="@{/}">Home </a> /
+                <span class="text-white">Product</span>
+            </span>
+    </div>
+    <h1 class="text-center m-5">Product</h1>
+    <div class="container">
+        <div class="row">
+            <!-- SIDE MENU -->
+            <div class="col-3">
+                <div class="mb-5">
+                    <h5 class="fw-bold">Menu</h5>
+                    <ul class="p-0">
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    th:href="@{/}">HOME</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    th:href="@{/product}">PRODUCT</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">ABOUT US</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">CONTACT US</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">BLOG</a></li>
+                    </ul>
+                </div>
+                <div class="mb-5">
+                    <h5 class="fw-bold">Category</h5>
+                    <ul class="p-0">
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">KID TOYS</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">DOLLS</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">KEY TOYS</a></li>
+                        <li class="list-unstyled side-menu-item"><a class="text-dark text-decoration-none"
+                                                                    href="#">BOY TOYS</a></li>
+                    </ul>
+                </div>
+                <div class="mb-5">
+                    <h5 class="fw-bold">Discount</h5>
+                    <ul class="p-0">
+                        <li class="list-unstyled side-menu-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkbox5%">
+                                <label class="form-check-label" for="checkbox5%">
+                                    5% or More
+                                </label>
+                            </div>
+                        </li>
+                        <li class="list-unstyled side-menu-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkbox10%">
+                                <label class="form-check-label" for="checkbox10%">
+                                    10% or More
+                                </label>
+                            </div>
+                        </li>
+                        <li class="list-unstyled side-menu-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkbox20%">
+                                <label class="form-check-label" for="checkbox20%">
+                                    20% or More
+                                </label>
+                            </div>
+                        </li>
+                        <li class="list-unstyled side-menu-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkbox30%">
+                                <label class="form-check-label" for="checkbox30%">
+                                    30% or More
+                                </label>
+                            </div>
+                        </li>
+                        <li class="list-unstyled side-menu-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkbox40%">
+                                <label class="form-check-label" for="checkbox40%">
+                                    40% or More
+                                </label>
+                            </div>
+                        </li>
+                        <li class="list-unstyled side-menu-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkbox50%">
+                                <label class="form-check-label" for="checkbox50%">
+                                    50% or More
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /SIDE MENU -->
+
+            <!-- PRODUCT -->
+            <div class="col-9">
+                <div class="row">
+                    <div th:each="product : ${products}" class="mb-4" style="width: 30%;">
+                        <div class="card border border-dark text-center w-100">
+                            <img th:src="@{${product.ProductImagePath}}" class="card-img-top border-bottom" alt="...">
+                            <div class="card-body">
+                                <a class="text-decoration-none text-dark common-hover" th:href="@{/product/product-detail/{id}(id=${product.id})}">
+                                    <h5 class="card-title" th:text="${product.productName}"></h5>
+                                </a>
+                                <p class="card-text">$<span th:text="${product.price}"></span></p>
+                                <a th:href="@{/product/product-detail/{id}(id=${product.id})}" class="btn btn-primary w-75 common-background-hover">Add to cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="m-5">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+
+                            <li th:if="${currentPage > 1}" class="page-item">
+                                <a class="page-link" th:href="@{/product/page/1}">
+                                    <i class="fa-solid fa-angles-left"></i>
+                                </a>
+                            </li>
+                            <li th:unless="${currentPage > 1}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </span>
+                            </li>
+
+                            <li th:if="${currentPage > 1}" class="page-item">
+                                <a class="page-link" th:href="@{'/product/page/' + ${currentPage - 1}}">
+                                    <i class="fa-solid fa-angle-left"></i>
+                                </a>
+                            </li>
+                            <li th:unless="${currentPage > 1}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </span>
+                            </li>
+
+                            <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item">
+                                <a th:if="${i != currentPage}"
+                                   th:href="@{'/product/page/' + ${i}}"
+                                   class="page-link">[[${i}]]</a>
+                                <span th:unless="${i != currentPage}"
+                                      class="page-link active">[[${i}]]</span>
+                            </li>
+
+
+                            <li th:if="${currentPage < totalPages}" class="page-item">
+                                <a class="page-link" th:href="@{'/product/page/' + ${currentPage + 1}}">
+                                    <i class="fa-solid fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li th:unless="${currentPage < totalPages}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </span>
+                            </li>
+
+
+                            <li th:if="${currentPage < totalPages}" class="page-item">
+                                <a class="page-link" th:href="@{'/product/page/' + ${totalPages}}">
+                                    <i class="fa-solid fa-angles-right"></i>
+                                </a>
+                            </li>
+                            <li th:unless="${currentPage < totalPages}" class="page-item">
+                        <span class="page-link">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </span>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /PRODUCT -->
+        </div>
+    </div>
+</main>
+</body>
+</html>
